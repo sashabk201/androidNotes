@@ -38,7 +38,7 @@ public class NoteFragment extends Fragment {
     public final static int ADD_ITEM_REQUEST_CODE = 1;
     private String type = TYPE_ALL;
 
-    private NoteRepository repository = new NoteRepository();
+    private NoteRepository repository;
     private NoteAdapter adapter;
     private RecyclerView recycleView;
     private FloatingActionButton fab;
@@ -49,6 +49,7 @@ public class NoteFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        repository = new NoteRepository(this.getContext());
         adapter = new NoteAdapter();
         Bundle bundle = getArguments();
         type = bundle.getString(TYPE_KEY,NoteFragment.TYPE_ALL);

@@ -123,4 +123,40 @@ public class Note  implements Parcelable {
     public boolean isFavorites() {
         return isFavorites;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public void setJob(boolean job) {
+        isJob = job;
+    }
+
+    public void setPurchases(boolean purchases) {
+        isPurchases = purchases;
+    }
+
+    public void setHome(boolean home) {
+        isHome = home;
+    }
+
+    public void setFavorites(boolean favorites) {
+        isFavorites = favorites;
+    }
 }
