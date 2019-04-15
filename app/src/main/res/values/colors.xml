@@ -2,5 +2,15 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#29B6F6</color>
+
+    <color name="colorItem">#FFFFC107</color>
+    <color name="colorItemDark">#FF9800</color>
+    <color name="colorJob">#C62828</color>
+    <color name="colorFavorites">#E71AA3</color>
+    <color name="colorHome">#283593</color>
+    <color name="colorPurchases">#558B2F</color>
+
+    <color name="white">#ffffff</color>
+    <color name="gray">#B3E5FC</color>
 </resources>

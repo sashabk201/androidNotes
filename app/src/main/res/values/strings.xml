@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">androidNotes</string>
+    <string name="app_name">Заметки</string>
+    <string name="app_new_note">Новая заметка</string>
+    <string name="note_header">Заголовок</string>
+    <string name="note_message">текс вашей заметки</string>
 </resources>
