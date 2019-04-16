@@ -2,10 +2,14 @@ package com.example.androidnotes.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.Date;
 
+
 public class Note  implements Parcelable {
+
+    private static final String TAG = "toString";
 
     private int id;
     private String header;
@@ -20,7 +24,19 @@ public class Note  implements Parcelable {
     public Note() {}
 
     public Note(String header, String message, String createDate, String updateDate, boolean isJob, boolean isPurchases, boolean isHome, boolean isFavorites) {
-        this.id = (int) new Date().getTime();
+        this.id = 0;
+        this.header = header;
+        this.message = message;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+        this.isJob = isJob;
+        this.isPurchases = isPurchases;
+        this.isHome = isHome;
+        this.isFavorites = isFavorites;
+    }
+
+    public Note(int id, String header, String message, String createDate, String updateDate, boolean isJob, boolean isPurchases, boolean isHome, boolean isFavorites) {
+        this.id = id;
         this.header = header;
         this.message = message;
         this.createDate = createDate;
@@ -87,6 +103,15 @@ public class Note  implements Parcelable {
                 ", isFavorites=" + isFavorites +
                 '}';
     }
+
+    public String toString(String separator) {
+        String str =  id + separator + header +separator + message +separator +createDate +separator +updateDate +separator
+                +isJob +separator +isPurchases +separator +isHome +separator +isFavorites;
+        Log.i(TAG, "toString: "+str);
+        return  str;
+
+    }
+
 
     public int getId() {
         return id;

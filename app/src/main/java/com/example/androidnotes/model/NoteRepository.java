@@ -9,6 +9,8 @@ import com.example.androidnotes.NoteFragment;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,54 +32,49 @@ public class NoteRepository {
 
     public NoteRepository(Context context) {
         this.context = context;
-        try {
-            Load();
-        } catch (Exception e) {
-
-        }
-        Random random = new Random();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
-        for (int i = 0; i < 30; i++) {
-            Note note = new Note("Заголовок"+i,"Сообщение"+i,
-                    dateFormat.format(new Date()), dateFormat.format(new Date()),
-                    random.nextBoolean(),random.nextBoolean(),random.nextBoolean(),random.nextBoolean());
-            list.add(note);
-        }
+        Load();
+//        Random random = new Random();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
+//        for (int i = 0; i < 30; i++) {
+//            Note note = new Note("Заголовок"+i,"Сообщение"+i,
+//                    dateFormat.format(new Date()), dateFormat.format(new Date()),
+//                    random.nextBoolean(),random.nextBoolean(),random.nextBoolean(),random.nextBoolean());
+//            list.add(note);
+//        }
     }
 
     public boolean save(Note note){
-        File rootFolder = context.getFilesDir();
-        File noteFile = new File(rootFolder,note.getId()+".txt");
-        /*File savedFile = noteFile.exists() ? noteFile : new File(rootFolder,note.getId()+".txt");*/
-        if (noteFile.exists()){
-           Note oldNote = parsStringData(loadFromFile(rootFolder.getPath()));
+        if (note.getId() != 0){
+           Note oldNote = parsStringData(loadFromFile(note.getId()+".txt"));
+           note.setCreateDate(oldNote.getCreateDate());
         }
+        if (note.getId() == 0) note.setId((int)new Date().getTime());
+        String filename = note.getId()+".txt";
+        FileOutputStream outputStream = null;
+        try {
+            String content = note.toString(SEPARATOR);
+            outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(content.getBytes());
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        list.add(note);
         return true;
     }
 
-    public void Load() throws IOException {
+    public void Load(){
+        createTestNote();
         File rootFolder = context.getFilesDir();
-
-        String filename = "note.txt";
-        String fileContents = "Hello world!";
-        FileOutputStream outputStream;
-
-        outputStream = context.openFileOutput(filename, Context.MODE_APPEND);
-        outputStream.write(fileContents.getBytes());
-        outputStream.close();
 
         File[] filesArray = rootFolder.listFiles();
         if (filesArray != null){
-            Log.i(TAG, "length: "+rootFolder.length());
             Log.i(TAG, "path: "+rootFolder.getPath());
             for (File f: filesArray) {
-                Log.i(TAG, "for: "+f.getName());
-                if (f.isDirectory())  Log.i(TAG, "Folder: "+f.getName());
-                else if (f.isFile()) Log.i(TAG, "File: "+f.getPath());
+                Log.i(TAG, "File: "+f.getPath());
             }
-        }
-        else {
-            Log.i(TAG, "path: "+rootFolder.getPath());
         }
     }
 
@@ -102,7 +99,7 @@ public class NoteRepository {
 
     private String loadFromFile(String fileName) {
         try {
-            InputStream inputStream = context.openFileInput(fileName);
+            FileInputStream inputStream = context.openFileInput(fileName);
             if (inputStream != null) {
                 InputStreamReader isr = new InputStreamReader(inputStream);
                 BufferedReader reader = new BufferedReader(isr);
@@ -117,12 +114,28 @@ public class NoteRepository {
                 return builder.toString();
             }
         } catch (Throwable t) {
+            t.printStackTrace();
             Toast.makeText(context,
                     "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
         }
         return null;
     }
 
+    private void createTestNote(){
+        File rootFolder = context.getFilesDir();
+        Random random = new Random();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
+        for (int i = 0; i < 3; i++) {
+            Note note = new Note("Заголовок"+i,"Сообщение"+i,
+                    dateFormat.format(new Date()), dateFormat.format(new Date()),
+                    random.nextBoolean(),random.nextBoolean(),random.nextBoolean(),random.nextBoolean());
+            save(note);
+
+        }
+
+    }
+
+//  GET LIST
 
     public List<Note> get(String type){
         List<Note> result = list;
