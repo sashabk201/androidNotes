@@ -32,7 +32,9 @@ public class NoteRepository {
 
     public NoteRepository(Context context) {
         this.context = context;
-        Load();
+        deleteAllNotes();
+        //createTestNote();
+        list =  Load();
 //        Random random = new Random();
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
 //        for (int i = 0; i < 30; i++) {
@@ -61,23 +63,44 @@ public class NoteRepository {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        list.add(note);
         return true;
     }
 
-    public void Load(){
-        createTestNote();
+    public List<Note> Load(){
         File rootFolder = context.getFilesDir();
-
         File[] filesArray = rootFolder.listFiles();
+        List<Note> items = new ArrayList<>();
         if (filesArray != null){
             Log.i(TAG, "path: "+rootFolder.getPath());
             for (File f: filesArray) {
+                Note note = parsStringData(loadFromFile(f.getName()));
+                items.add(note);
                 Log.i(TAG, "File: "+f.getPath());
+            }
+        }
+        return items;
+    }
+
+    public void logTest(){
+        File rootFolder = context.getFilesDir();
+        File[] filesArray = rootFolder.listFiles();
+        if (filesArray != null){
+            for (File f: filesArray) {
+                Log.i(TAG, "Files: "+f.getPath());
             }
         }
     }
 
+    public void deleteAllNotes(){
+        File rootFolder = context.getFilesDir();
+        File[] filesArray = rootFolder.listFiles();
+        if (filesArray != null){
+            for (File f: filesArray) {
+                if (f.delete())
+                    Log.i(TAG, "File delete: "+f.getPath());
+            }
+        }
+    }
     private Note parsStringData(String data){
         Note note = new Note();
         String[] parsData = data.split(SEPARATOR);
@@ -121,8 +144,7 @@ public class NoteRepository {
         return null;
     }
 
-    private void createTestNote(){
-        File rootFolder = context.getFilesDir();
+    public void createTestNote(){
         Random random = new Random();
         SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
         for (int i = 0; i < 3; i++) {
@@ -135,20 +157,26 @@ public class NoteRepository {
 
     }
 
+    public Note get(int i){
+        return list.get(i);
+    }
+
 //  GET LIST
 
     public List<Note> get(String type){
+        if (list.size() == 0){
+            list = Load();
+        }
         List<Note> result = list;
         switch (type)
         {
-            case NoteFragment.TYPE_ALL: break;
+            case NoteFragment.TYPE_ALL: result = Load(); break;
             case NoteFragment.TYPE_JOB: result = getJobsNote(); break;
             case NoteFragment.TYPE_FAVORITE: result = getFavoriteNote(); break;
             case NoteFragment.TYPE_HOME: result = getHomeNote(); break;
             case NoteFragment.TYPE_PURCHASES: result = getPurchasesNote(); break;
         }
-        if (result.size() > 0) return result;
-        return null;
+        return  result;
     }
 
     private List<Note> getJobsNote(){

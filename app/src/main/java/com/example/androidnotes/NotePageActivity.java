@@ -43,6 +43,21 @@ public class NotePageActivity extends AppCompatActivity {
         purchases = findViewById(R.id.purchases);
         addBtn = findViewById(R.id.add_btn);
 
+
+        Intent intent = getIntent();
+        final Note editNote =  intent.getParcelableExtra(NoteFragment.NOTE_KEY);
+
+        if (editNote!= null) {
+            header.setText(editNote.getHeader());
+            message.setText(editNote.getMessage());
+            job.setChecked(editNote.isJob());
+            favorite.setChecked(editNote.isFavorites());
+            home.setChecked(editNote.isHome());
+            purchases.setChecked(editNote.isPurchases());
+
+        }
+
+
         textWatcher = new TextWatcher() {
 
             @Override
@@ -72,11 +87,23 @@ public class NotePageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("d-M-y H:m");
-                Note item = new Note(header.getText().toString(),message.getText().toString(),
-                        dateFormat.format(new Date()), dateFormat.format(new Date()),
-                        job.isChecked(),purchases.isChecked(),home.isChecked(),favorite.isChecked());
+                Note item;
+                if (editNote != null){
+                    editNote.setPurchases(purchases.isChecked());
+                    editNote.setJob(job.isChecked());
+                    editNote.setFavorites(favorite.isChecked());
+                    editNote.setHome(home.isChecked());
+                    editNote.setHeader(header.getText().toString());
+                    editNote.setMessage(message.getText().toString());
+                    editNote.setUpdateDate(dateFormat.format(new Date()));
+                    item = editNote;
+                }else {
+                    item = new Note(header.getText().toString(),message.getText().toString(),
+                            dateFormat.format(new Date()), dateFormat.format(new Date()),
+                            job.isChecked(),purchases.isChecked(),home.isChecked(),favorite.isChecked());
+                    Log.i(TAG, "onClick: "+item.toString());
+                }
 
-                Log.i(TAG, "onClick: "+item.toString());
                 Intent intent = new Intent();
                 intent.putExtra("item",item);
 

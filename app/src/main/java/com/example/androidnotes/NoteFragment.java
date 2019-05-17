@@ -27,6 +27,7 @@ import java.util.List;
 public class NoteFragment extends Fragment {
 
 
+    public final static String TYPE_LOAD = "LOAD";
     public final static String TYPE_ALL = "ALL";
     public final static String TYPE_JOB = "JOB";
     public final static String TYPE_FAVORITE = "FAVORITE";
@@ -34,8 +35,10 @@ public class NoteFragment extends Fragment {
     public final static String TYPE_PURCHASES = "PURCHASES";
     public final static String TYPE_KEY = "type";
 
+    public final static String NOTE_KEY = "note";
 
     public final static int ADD_ITEM_REQUEST_CODE = 1;
+    public final static int EDIT_ITEM_REQUEST_CODE = 2;
     private String type = TYPE_ALL;
 
     private NoteRepository repository;
@@ -51,6 +54,15 @@ public class NoteFragment extends Fragment {
 
         repository = new NoteRepository(this.getContext());
         adapter = new NoteAdapter();
+        adapter.mOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = recycleView.getChildLayoutPosition(view);
+                Intent intent = new Intent(getContext(),NotePageActivity.class);
+                intent.putExtra(NOTE_KEY,repository.get(position));
+                startActivityForResult(intent,EDIT_ITEM_REQUEST_CODE);
+            }
+        };
         Bundle bundle = getArguments();
         type = bundle.getString(TYPE_KEY,NoteFragment.TYPE_ALL);
     }
@@ -91,12 +103,28 @@ public class NoteFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             Note item =  data.getParcelableExtra("item");
             Log.i(TAG, "onActivityResult: "+item);
+            repository.save(item);
             adapter.addItem(item);
+            repository.logTest();
         }
+
+        if (requestCode == EDIT_ITEM_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            Note item =  data.getParcelableExtra("item");
+            Log.i(TAG, "onActivityResult: "+item);
+            repository.save(item);
+            repository.logTest();
+            setData();
+        }
+
 
         super.onActivityResult(requestCode, resultCode, data);
     }
